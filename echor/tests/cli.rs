@@ -28,7 +28,6 @@ fn hello1() -> TestResult {
     run(&["Hello there"], "tests/expected/hello1.txt")
 }
 
-// --------------------------------------------------
 #[test]
 fn hello2() -> TestResult {
     run(&["Hello", "there"], "tests/expected/hello2.txt")
