@@ -35,10 +35,15 @@ fn gen_bad_file() -> String {
 #[test]
 fn dies_bad_bytes() -> Result<()> {
     let bad = random_string();
-    let expected = format!(
-        "invalid value '{bad}' for \
-        '--bytes <BYTES>': invalid digit found in string"
-    );
+    let expected = format!("invalid digit found in string");
+    Command::cargo_bin(PRG)?
+        .args(["-c", &bad, EMPTY])
+        .assert()
+        .failure()
+        .stderr(predicate::str::contains(expected));
+
+    let bad = String::from("0");
+    let expected = format!("the argument '--bytes <BYTES>' cannot be less than 1");
     Command::cargo_bin(PRG)?
         .args(["-c", &bad, EMPTY])
         .assert()
@@ -52,10 +57,15 @@ fn dies_bad_bytes() -> Result<()> {
 #[test]
 fn dies_bad_lines() -> Result<()> {
     let bad = random_string();
-    let expected = format!(
-        "error: invalid value '{bad}' for \
-        '--lines <LINES>': invalid digit found in string"
-    );
+    let expected = format!("invalid digit found in string");
+    Command::cargo_bin(PRG)?
+        .args(["-n", &bad, EMPTY])
+        .assert()
+        .failure()
+        .stderr(predicate::str::contains(expected));
+
+    let bad = String::from("0");
+    let expected = format!("the argument '--lines <LINES>' cannot be less than 1");
     Command::cargo_bin(PRG)?
         .args(["-n", &bad, EMPTY])
         .assert()
@@ -111,11 +121,7 @@ fn run(args: &[&str], expected_file: &str) -> Result<()> {
 }
 
 // --------------------------------------------------
-fn run_stdin(
-    args: &[&str],
-    input_file: &str,
-    expected_file: &str,
-) -> Result<()> {
+fn run_stdin(args: &[&str], input_file: &str, expected_file: &str) -> Result<()> {
     // Extra work here due to lossy UTF
     let mut file = File::open(expected_file)?;
     let mut buffer = Vec::new();
