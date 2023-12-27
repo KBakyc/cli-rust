@@ -62,7 +62,7 @@ pub fn run(config: Config) -> Result<()> {
             Err(err) => eprintln!("Failed to open {filename}: {err}"),
             Ok(mut file) => {
                 if let Some(bytes) = config.bytes {
-                    print_bytes(&mut file, bytes);
+                    print_bytes(&mut file, bytes)?;
                 } else {
                     print_lines_with_original_eol(&mut file, config.lines)?;
                 }
@@ -86,12 +86,10 @@ fn print_lines_with_original_eol(file: &mut dyn BufRead, lines: usize) -> Result
 }
 
 /// print bytes
-fn print_bytes(file: &mut dyn BufRead, bytes: usize) {
-    let mut handle = io::Read::take(file, bytes as u64);
-    let mut buffer = vec![0; bytes];
-    while handle.read_exact(&mut buffer).is_ok() {
-        print!("{}", String::from_utf8_lossy(&buffer));
-    }
+fn print_bytes(file: &mut dyn BufRead, bytes: usize) -> Result<()> {
+    let bytes: Result<Vec<_>, _> = file.bytes().take(bytes).collect();
+    print!("{}", String::from_utf8_lossy(&bytes?));
+    Ok(())
 }
 
 fn open(filename: &str) -> Result<Box<dyn BufRead>> {
