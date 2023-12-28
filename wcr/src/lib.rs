@@ -5,6 +5,10 @@ use anyhow::Result;
 use argh::FromArgs;
 use std::fs::File;
 use std::io::{self, BufRead, BufReader};
+
+/// Standard input alias
+const STDIN_NAME: &str = "-";
+
 /// Rust wc
 #[derive(FromArgs, Debug)]
 pub struct Config {
@@ -61,7 +65,7 @@ pub fn get_args() -> Config {
     }
 
     if config.files.is_empty() {
-        config.files.push(String::from("-"));
+        config.files.push(String::from(STDIN_NAME));
     }
 
     config
@@ -92,7 +96,7 @@ pub fn run(config: Config) -> Result<()> {
 /// Open a file or standard input for reading
 fn open(filename: &str) -> Result<Box<dyn BufRead>> {
     match filename {
-        "-" => Ok(Box::new(BufReader::new(io::stdin()))),
+        STDIN_NAME => Ok(Box::new(BufReader::new(io::stdin()))),
         _ => Ok(Box::new(BufReader::new(File::open(filename)?))),
     }
 }
@@ -130,7 +134,11 @@ fn print_info_line(info: &FileInfo, config: &Config, filename: &str) {
         format_field(info.num_words, config.words),
         format_field(info.num_bytes, config.bytes),
         format_field(info.num_chars, config.chars),
-        filename
+        if filename == STDIN_NAME {
+            String::new()
+        } else {
+            format!(" {}", filename)
+        }
     );
 }
 

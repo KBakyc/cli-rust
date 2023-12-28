@@ -161,8 +161,7 @@ fn atlamal_bytes_lines() -> Result<()> {
 #[test]
 fn atlamal_stdin() -> Result<()> {
     let input = fs::read_to_string(ATLAMAL)?;
-    let expected =
-        fs::read_to_string("tests/expected/atlamal.txt.stdin.out")?;
+    let expected = fs::read_to_string("tests/expected/atlamal.txt.stdin.out")?;
     Command::cargo_bin(PRG)?
         .write_stdin(input)
         .assert()
@@ -197,17 +196,26 @@ fn test_all_bytes() -> Result<()> {
 // --------------------------------------------------
 #[test]
 fn test_all_words_bytes() -> Result<()> {
-    run(&["-cw", EMPTY, FOX, ATLAMAL], "tests/expected/all.wc.out")
+    run(
+        &["-c", "-w", EMPTY, FOX, ATLAMAL],
+        "tests/expected/all.wc.out",
+    )
 }
 
 // --------------------------------------------------
 #[test]
 fn test_all_words_lines() -> Result<()> {
-    run(&["-wl", EMPTY, FOX, ATLAMAL], "tests/expected/all.wl.out")
+    run(
+        &["-w", "-l", EMPTY, FOX, ATLAMAL],
+        "tests/expected/all.wl.out",
+    )
 }
 
 // --------------------------------------------------
 #[test]
 fn test_all_bytes_lines() -> Result<()> {
-    run(&["-cl", EMPTY, FOX, ATLAMAL], "tests/expected/all.cl.out")
+    run(
+        &["-c", "-l", EMPTY, FOX, ATLAMAL],
+        "tests/expected/all.cl.out",
+    )
 }
