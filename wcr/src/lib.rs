@@ -5,6 +5,7 @@ use anyhow::Result;
 use argh::FromArgs;
 use std::fs::File;
 use std::io::{self, BufRead, BufReader};
+use std::ops::AddAssign;
 
 /// Standard input alias
 const STDIN_NAME: &str = "-";
@@ -40,14 +41,13 @@ pub struct FileInfo {
     num_bytes: usize,
     num_chars: usize,
 }
-impl FileInfo {
-    fn add(&self, info: &FileInfo) -> FileInfo {
-        FileInfo {
-            num_lines: self.num_lines + info.num_lines,
-            num_words: self.num_words + info.num_words,
-            num_bytes: self.num_bytes + info.num_bytes,
-            num_chars: self.num_chars + info.num_chars,
-        }
+
+impl AddAssign for FileInfo {
+    fn add_assign(&mut self, rhs: Self) {
+        self.num_lines += rhs.num_lines;
+        self.num_words += rhs.num_words;
+        self.num_bytes += rhs.num_bytes;
+        self.num_chars += rhs.num_chars;
     }
 }
 
@@ -83,7 +83,7 @@ pub fn run(config: Config) -> Result<()> {
             Ok(file) => {
                 let info = count(file)?;
                 print_info_line(&info, &config, filename);
-                sum_info = sum_info.add(&info);
+                sum_info += info;
             }
         }
     }
@@ -146,7 +146,7 @@ fn format_field(value: usize, show: bool) -> String {
     if show {
         format!("{value:>8}")
     } else {
-        "".to_string()
+        String::new()
     }
 }
 
