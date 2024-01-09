@@ -16,7 +16,21 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: List all projects
+      id: list
+      run: |
+        echo "::set-output name=projects::$(find . -name 'Cargo.toml' -exec dirname {} \;)"
     - name: Build
-      run: cargo build --verbose
+      run: |
+        for project in ${{ steps.list.outputs.projects }}; do
+          cd $project
+          cargo build --verbose
+          cd -
+        done
     - name: Run tests
-      run: cargo test --verbose
+      run: |
+        for project in ${{ steps.list.outputs.projects }}; do
+          cd $project
+          cargo test --verbose
+          cd -
+        done
