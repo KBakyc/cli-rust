@@ -19,17 +19,21 @@ jobs:
     - name: List all projects
       id: list
       run: |
-        echo "::set-output name=projects::$(find . -name 'Cargo.toml' -exec dirname {} \;)"
+        echo 'PROJECTS<<EOF' >> $GITHUB_ENV
+        find . -name 'Cargo.toml' -exec dirname {} \; >> $GITHUB_ENV
+        echo 'EOF' >> $GITHUB_ENV
     - name: Build
       run: |
-        for project in ${{ steps.list.outputs.projects }}; do
+        IFS=$'\n' read -d '' -r -a projects <<< "$PROJECTS"
+        for project in "${projects[@]}"; do
           cd $project
           cargo build --verbose
           cd -
         done
     - name: Run tests
       run: |
-        for project in ${{ steps.list.outputs.projects }}; do
+        IFS=$'\n' read -d '' -r -a projects <<< "$PROJECTS"
+        for project in "${projects[@]}"; do
           cd $project
           cargo test --verbose
           cd -
