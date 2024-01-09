@@ -19,11 +19,11 @@ jobs:
         id: list
         run: |
           echo 'PROJECTS<<EOF' >> $GITHUB_ENV
-          find . -name 'Cargo.toml' -exec dirname {} \; >> $GITHUB_ENV
+          find . -name 'Cargo.toml' -exec dirname {} \; | paste -sd, >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
       - name: Build
         run: |
-          IFS=' ' read -r -a projects <<< "$PROJECTS"
+          IFS=',' read -r -a projects <<< "$PROJECTS"
           for project in "${projects[@]}"; do
             echo "Building project: $project"
             cd $project
@@ -33,7 +33,7 @@ jobs:
           done
       - name: Run tests
         run: |
-          IFS=' ' read -r -a projects <<< "$PROJECTS"
+          IFS=',' read -r -a projects <<< "$PROJECTS"
           for project in "${projects[@]}"; do
             echo "Testing project: $project"
             cd $project
