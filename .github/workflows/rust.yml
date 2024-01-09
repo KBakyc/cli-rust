@@ -24,7 +24,7 @@ jobs:
         echo 'EOF' >> $GITHUB_ENV
     - name: Build
       run: |
-        IFS=$'\n' read -d '' -r -a projects <<< "$PROJECTS"
+        IFS=' ' read -r -a projects <<< "$PROJECTS"
         for project in "${projects[@]}"; do
           cd $project
           cargo build --verbose
@@ -32,7 +32,7 @@ jobs:
         done
     - name: Run tests
       run: |
-        IFS=$'\n' read -d '' -r -a projects <<< "$PROJECTS"
+        IFS=' ' read -r -a projects <<< "$PROJECTS"
         for project in "${projects[@]}"; do
           cd $project
           cargo test --verbose
