@@ -2,39 +2,42 @@ name: Rust
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: List all projects
-      id: list
-      run: |
-        echo 'PROJECTS<<EOF' >> $GITHUB_ENV
-        find . -name 'Cargo.toml' -exec dirname {} \; >> $GITHUB_ENV
-        echo 'EOF' >> $GITHUB_ENV
-    - name: Build
-      run: |
-        IFS=' ' read -r -a projects <<< "$PROJECTS"
-        for project in "${projects[@]}"; do
-          cd $project
-          cargo build --verbose
-          cd -
-        done
-    - name: Run tests
-      run: |
-        IFS=' ' read -r -a projects <<< "$PROJECTS"
-        for project in "${projects[@]}"; do
-          cd $project
-          cargo test --verbose
-          cd -
-        done
+      - uses: actions/checkout@v3
+      - name: List all projects
+        id: list
+        run: |
+          echo 'PROJECTS<<EOF' >> $GITHUB_ENV
+          find . -name 'Cargo.toml' -exec dirname {} \; >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+      - name: Build
+        run: |
+          IFS=' ' read -r -a projects <<< "$PROJECTS"
+          for project in "${projects[@]}"; do
+            echo "Building project: $project"
+            cd $project
+            cargo build
+            cd -
+            echo "Finished building project: $project"
+          done
+      - name: Run tests
+        run: |
+          IFS=' ' read -r -a projects <<< "$PROJECTS"
+          for project in "${projects[@]}"; do
+            echo "Testing project: $project"
+            cd $project
+            cargo test
+            cd -
+            echo "Finished testing project: $project"
+          done
