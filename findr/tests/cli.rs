@@ -2,6 +2,8 @@ use anyhow::Result;
 use assert_cmd::Command;
 use predicates::prelude::*;
 use rand::{distributions::Alphanumeric, Rng};
+#[cfg(not(windows))]
+use std::path::Path;
 use std::{borrow::Cow, fs};
 
 const PRG: &str = "findr";
