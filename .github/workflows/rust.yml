@@ -37,6 +37,9 @@ jobs:
           for project in "${projects[@]}"; do
             echo "---=== Testing project: $project ===---"
             cd $project
+            if [ -f ./set-test-perms.sh ]; then
+              ./set-test-perms.sh
+            fi
             cargo test
             cd -
             echo "---=== Finished testing project: $project ===---"
