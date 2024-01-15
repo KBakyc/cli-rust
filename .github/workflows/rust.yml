@@ -38,6 +38,7 @@ jobs:
             echo "---=== Testing project: $project ===---"
             cd $project
             if [ -f ./set-test-perms.sh ]; then
+              echo "Running set-test-perms.sh"
               ./set-test-perms.sh
             fi
             cargo test
