@@ -8,9 +8,9 @@ use std::{fs, os::unix::fs::MetadataExt, path::PathBuf};
 use tabular::{Row, Table};
 use users::{get_group_by_gid, get_user_by_uid};
 
+/// Rust version of `ls`
 #[derive(Debug, Parser)]
 #[command(author, version, about)]
-/// Rust version of `ls`
 struct Args {
     /// Files and/or directories
     #[arg(default_value = ".")]
